@@ -1,14 +1,16 @@
 import psycopg2
 from itertools import groupby
 
-def get_all_def_stats(tstart = 1483056000000, tend = 1617370357000, host = 96):
+def get_all_def_stats(tstart = 1483056000000, tend = 1617370357000, host = 10.202.248.96):
     
     """
     Сбор статистики по количеству срабатываний по каждому дефекту
+    tstart - время начала в миллисекундах
+    tend - время окончания в миллисекундах
     """
 
     # получение названий дефектов из бд по def_id
-    conn_params = "dbname = block002catalog user = vti password = vti host = 10.202.248." + str(host)
+    conn_params = "dbname = block002catalog user = vti password = vti host = " + str(host)
     all_def_names = {}
     counter_all = {}
     sql = "SELECT def_id, def_name FROM defect;"
@@ -18,7 +20,7 @@ def get_all_def_stats(tstart = 1483056000000, tend = 1617370357000, host = 96):
             for i in cur.fetchall():
                 all_def_names[i[0]] = i[1]
     
-    conn_params = "dbname = state user = vti password = vti host = 10.202.248." + str(host)    
+    conn_params = "dbname = state user = vti password = vti host = " + str(host)    
     with psycopg2.connect(conn_params) as conn:
         query = "select value from def_{2} where value!= -1 AND timestamp > {0} and timestamp  < {1} order by timestamp desc"
         for table_name in all_def_names.keys():
