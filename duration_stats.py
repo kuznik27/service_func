@@ -3,7 +3,7 @@ import pandas as pd
 from datetime import datetime
 
 
-def duration_analys(defect, tstart_pnd2, tend_pnd2, host = 91):
+def duration_analys(defect, tstart_pnd2, tend_pnd2, host = 10.202.248.96):
     """
     Функция позволяет:
     — получать информацию об уровне дефекта, его длительности и скорости изменения мощности в это время за заданный промежуток времени,
@@ -12,7 +12,7 @@ def duration_analys(defect, tstart_pnd2, tend_pnd2, host = 91):
 
     
     # получение данных о названиях дефектов
-    conn_params = "dbname=block002catalog user=vti password=vti host=10.202.248."+str(host)
+    conn_params = "dbname=block002catalog user=user password=qwerty host = "+str(host)
     sensor = "KKS_02SP_10_E901__XQ02"
     sql = "SELECT def_id, def_name FROM defect;"
     def_names = {}
@@ -24,7 +24,7 @@ def duration_analys(defect, tstart_pnd2, tend_pnd2, host = 91):
                 def_names[i[0]] = i[1]
     
     # получение данных датчика мощности за период tstart_pnd2 - tend_pnd2
-    conn_params = "dbname=asutp user=vti password=vti host=10.202.248."+str(host)
+    conn_params = "dbname=asutp user=user password=qwerty host= "+str(host)
     sql = "SELECT kks_timestamp, kks_value FROM {} WHERE kks_timestamp >= {}-5000 AND kks_timestamp <= {}+5000 ORDER BY kks_timestamp ;"
 
     with psycopg2.connect(conn_params) as conn:
@@ -42,7 +42,7 @@ def duration_analys(defect, tstart_pnd2, tend_pnd2, host = 91):
         FROM def_{0}\
         WHERE value!= -1  AND timestamp >= {1} AND timestamp <= {2}) AS tab;'
 
-    conn_params = "dbname=state user=vti password=vti host=10.202.248."+str(host)
+    conn_params = "dbname=state user=user password=qwerty host= "+str(host)
     with psycopg2.connect(conn_params) as conn:
         with conn.cursor() as cur:
             cur.execute(sql.format(defect, tstart_pnd2, tend_pnd2))
@@ -71,7 +71,7 @@ def duration_analys(defect, tstart_pnd2, tend_pnd2, host = 91):
         WHERE value!= -1  AND timestamp >= {4} AND timestamp <= {5}) AS tab\
         WHERE difference > {2} AND difference < {0} AND (value = {3});'
 
-    conn_params = "dbname=state user=vti password=vti host=10.202.248."+str(host)
+    conn_params = "dbname=state user=user password=qwerty host= "+str(host)
     with psycopg2.connect(conn_params) as conn:
         with conn.cursor() as cur:
             res = pd.DataFrame(columns = columns_names)
